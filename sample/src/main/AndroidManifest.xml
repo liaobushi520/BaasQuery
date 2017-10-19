@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.liaobusi.baasquery">
+
+    <application
+        android:name=".SampleAppliction"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity android:name=".SampleActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <meta-data
+            android:name="com.droi.sdk.application_id"
+            android:value="56lvmbzhOSd5VOT1TNyu3OBXp8oVaHBnlQCN3ToB"/>
+        <meta-data
+            android:name="com.droi.sdk.platform_key"
+            android:value="BUaDoWgsp37gkS6ih3u-6dVO3qJ-4JG_6dVO3qJ-"/>
+        <meta-data
+            android:name="com.droi.sdk.channel_name"
+            android:value="91Helper" />
+        <meta-data
+            android:name="com.droi.sdk.secret_key"
+            android:value="0gka4x4f" />
+    </application>
+
+</manifest>
