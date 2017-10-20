@@ -26,7 +26,6 @@ public class CompoundCondition extends Condition {
 
     public static final String PARENTHESES_PATTERN = "(?<=\\()[^\\)]+";
 
-
     private List<Condition> subConditions = new ArrayList<>();
 
     private List<String> operations = new ArrayList<>();

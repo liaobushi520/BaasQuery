@@ -65,7 +65,23 @@ class PureCondition extends Condition {
         varName = parentVarName + position;
     }
 
-
+    @Override
+    public void brewJava(MethodSpec.Builder builder) {
+        String statement;
+        Object[] types;
+        if (!rightVarLiteral) {
+            statement = "$T " + varName + "=$T.cond($S,$S," + rightVar + ")";
+            types = new Object[]{DroiCondition.class, DroiCondition.class, leftVar, operation};
+        } else {
+            if (rightVar instanceof String) {
+                statement = "$T " + varName + "=$T.cond($S,$S,$S)";
+            } else {
+                statement = "$T " + varName + "=$T.cond($S,$S,$L)";
+            }
+            types = new Object[]{DroiCondition.class, DroiCondition.class, leftVar, operation, rightVar};
+        }
+        builder.addStatement(statement, types);
+    }
 
     private void checkINOperation(List<ParameterSpec> parameters) {
         for (ParameterSpec parameterSpec : parameters) {
@@ -123,24 +139,4 @@ class PureCondition extends Condition {
             }
         }
     }
-
-    @Override
-    public void brewJava(MethodSpec.Builder builder) {
-        String statement;
-        Object[] types;
-        if (!rightVarLiteral) {
-            statement = "$T " + varName + "=$T.cond($S,$S," + rightVar + ")";
-            types = new Object[]{DroiCondition.class, DroiCondition.class, leftVar, operation};
-        } else {
-            if (rightVar instanceof String) {
-                statement = "$T " + varName + "=$T.cond($S,$S,$S)";
-            } else {
-                statement = "$T " + varName + "=$T.cond($S,$S,$L)";
-            }
-            types = new Object[]{DroiCondition.class, DroiCondition.class, leftVar, operation, rightVar};
-        }
-        builder.addStatement(statement, types);
-    }
-
-
 }
