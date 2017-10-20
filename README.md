@@ -21,3 +21,8 @@ public interface BaasService{
 final BaasService baasService = BaasQuery.query(BaasService.class);
 List<Students> students=baasServise.listStudents(5,"李");
 ```
+代码解释:@Service会在编译期生成BaasServiceImp类，@Query会为该类实现被注解的方法。table指定表名，condition指定查询条件(使用$参数名可以引用方法中的参数，例如$age),limit指定需要返回的数据集数量，orderBy指定排序规则。
+
+**需要注意的是以上的查询代码实在主线程中执行，要想异步调用可以将返回值修改为BaasCall\<List\<Student\>\>,通过BaasCall执行异步查询。**
+
+##实现原理
