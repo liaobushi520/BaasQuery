@@ -9,8 +9,8 @@ BaasQuery简化了客户端对baas数据库的查询操作。
  DroiCondition condition = ageCondition.and(nameCondition);
  DroiQuery.Builder builder = DroiQuery.Builder.newBuilder().query("table_student").where(condition).limit(50).orderBy("name",true);
  DroiError droiError=new DroiError();
- List<Student> students=builder.build().runQuery(droiError); ```
-
+ List<Student> students=builder.build().runQuery(droiError);  
+```
 BaasQuery查询代码
 ```Java
 @Service
@@ -19,4 +19,5 @@ public interface BaasService{
        List<Student> listStudents(int age,String name);
 }
 final BaasService baasService = BaasQuery.query(BaasService.class);
-List<Students> students=baasServise.listStudents(5,"李");```
+List<Students> students=baasServise.listStudents(5,"李");
+```
