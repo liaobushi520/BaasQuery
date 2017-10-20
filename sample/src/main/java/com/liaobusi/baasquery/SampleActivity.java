@@ -23,7 +23,6 @@ public class SampleActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sample);
 
-
         final BaasService baasService = BaasQuery.query(BaasService.class);
         if (baasService != null) {
             new Thread(new Runnable() {

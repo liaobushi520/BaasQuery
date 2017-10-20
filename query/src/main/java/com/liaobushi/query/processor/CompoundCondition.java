@@ -47,17 +47,14 @@ public class CompoundCondition extends Condition {
         varName = parentVarName + position;
         for (int i = 0; i < results.length; i++) {
             String sub = results[i].trim();
-            messager.printMessage(Diagnostic.Kind.WARNING, sub + "");
             Condition condition;
-            if (sub.startsWith("(") && sub.endsWith(")")) {
-                sub = sub.substring(1, sub.length() - 1);
-            }
+            sub = Utils.removeParentheses(sub);
             if (sub.contains(AND) || sub.contains(OR)) {
                 condition = new CompoundCondition(messager, sub, i);
             } else {
                 condition = new PureCondition(messager, sub, i);
             }
-            condition.buildCondition(varName,parameters);
+            condition.buildCondition(varName, parameters);
             subConditions.add(condition);
         }
     }

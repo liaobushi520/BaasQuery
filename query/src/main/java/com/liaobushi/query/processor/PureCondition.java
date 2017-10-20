@@ -65,31 +65,7 @@ class PureCondition extends Condition {
         varName = parentVarName + position;
     }
 
-    private boolean isSuperInterface(Class checked, Class superInterface) {
-        Class[] checkedInterfaces = checked.getInterfaces();
-        if (checkedInterfaces == null || checkedInterfaces.length <= 0) {
-            return false;
-        }
-        List<Class> interfaces = Arrays.asList(checkedInterfaces);
-        List<Class> tempArray = new ArrayList<>();
-        while (interfaces.size() > 0) {
-            for (Class c : interfaces) {
-                messager.printMessage(Diagnostic.Kind.WARNING, c.getCanonicalName() + "");
-                if (superInterface.getCanonicalName().equals(c.getCanonicalName())) {
-                    return true;
-                }
-            }
-            tempArray.clear();
-            for (Class c : interfaces) {
-                Class[] arr = c.getInterfaces();
-                if (arr != null && arr.length > 0) {
-                    tempArray.addAll(Arrays.asList(arr));
-                }
-            }
-            interfaces = tempArray;
-        }
-        return false;
-    }
+
 
     private void checkINOperation(List<ParameterSpec> parameters) {
         for (ParameterSpec parameterSpec : parameters) {
@@ -100,7 +76,7 @@ class PureCondition extends Condition {
                         rawClassName = ((ParameterizedTypeName) parameterSpec.type).rawType.toString();
                     }
                     Class c = Class.forName(rawClassName, true, List.class.getClassLoader());
-                    if (!isSuperInterface(c, List.class)) {
+                    if (!Utils.isSuperInterface(c, List.class)) {
                         messager.printMessage(Diagnostic.Kind.ERROR, "condition :" + text + " ,IN operation's right var must be array,"
                                 + "current is " + parameterSpec.type);
                     }

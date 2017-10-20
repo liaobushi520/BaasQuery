@@ -33,11 +33,7 @@ public abstract class Condition {
 
     public Condition(Messager messager, String s, int pos) {
         this.messager = messager;
-        s = s.trim();
-        if (s.startsWith("(") && s.endsWith(")")) {
-            s = s.substring(1, s.length() - 1);
-        }
-        this.text = s;
+        this.text = Utils.removeParentheses(s.trim());
         this.position = pos;
 
 
@@ -47,16 +43,17 @@ public abstract class Condition {
 
     public abstract void brewJava(MethodSpec.Builder builder);
 
-    public static int checkConditionType(String s) {
+    private static int checkConditionType(String s) {
         String[] result = s.split(SIMPLE_SPLIT_PATTERN);
-        if (result != null && result.length > 1) {
+        if (result.length > 1) {
             return COMPOUND_CONDITION;
         }
         return PURE_CONDITION;
     }
 
 
-    public static String build(MethodSpec.Builder builder, Messager messager, String s, List<ParameterSpec> parameters) {
+    static String build(MethodSpec.Builder builder, Messager messager, String s, List<ParameterSpec> parameters) {
+        s = Utils.removeParentheses(s);
         String varName = VAR_NAME_PRRFIX + 0;
         Condition condition;
         if (checkConditionType(s) == COMPOUND_CONDITION) {
