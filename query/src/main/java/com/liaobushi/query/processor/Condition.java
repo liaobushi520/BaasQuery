@@ -2,6 +2,9 @@ package com.liaobushi.query.processor;
 
 import com.droi.sdk.core.DroiCondition;
 import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterSpec;
+
+import java.util.List;
 
 import javax.annotation.processing.Messager;
 
@@ -30,12 +33,17 @@ public abstract class Condition {
 
     public Condition(Messager messager, String s, int pos) {
         this.messager = messager;
+        s = s.trim();
+        if (s.startsWith("(") && s.endsWith(")")) {
+            s = s.substring(1, s.length() - 1);
+        }
         this.text = s;
         this.position = pos;
 
+
     }
 
-    public abstract void buildCondition(String parentVarName);
+    public abstract void buildCondition(String parentVarName, List<ParameterSpec> parameters);
 
     public abstract void brewJava(MethodSpec.Builder builder);
 
@@ -48,15 +56,15 @@ public abstract class Condition {
     }
 
 
-    public static String build(MethodSpec.Builder builder, Messager messager, String s) {
+    public static String build(MethodSpec.Builder builder, Messager messager, String s, List<ParameterSpec> parameters) {
         String varName = VAR_NAME_PRRFIX + 0;
         Condition condition;
         if (checkConditionType(s) == COMPOUND_CONDITION) {
             condition = new CompoundCondition(messager, s, 0);
         } else {
-            condition = new PureCondition(messager,s, 0);
+            condition = new PureCondition(messager, s, 0);
         }
-        condition.buildCondition(varName);
+        condition.buildCondition(varName, parameters);
         condition.brewJava(builder);
         builder.addStatement("$T " + varName + "=" + condition.varName, DroiCondition.class);
         return varName;

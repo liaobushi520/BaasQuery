@@ -2,6 +2,7 @@ package com.liaobushi.query.processor;
 
 import com.droi.sdk.core.DroiCondition;
 import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterSpec;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +37,7 @@ public class CompoundCondition extends Condition {
 
 
     @Override
-    public void buildCondition(String parentVarName) {
+    public void buildCondition(String parentVarName, List<ParameterSpec> parameters) {
         Pattern pattern = Pattern.compile(SPLIT_PATTERN);
         Matcher matcher = pattern.matcher(text);
         while (matcher.find()) {
@@ -56,7 +57,7 @@ public class CompoundCondition extends Condition {
             } else {
                 condition = new PureCondition(messager, sub, i);
             }
-            condition.buildCondition(varName);
+            condition.buildCondition(varName,parameters);
             subConditions.add(condition);
         }
     }

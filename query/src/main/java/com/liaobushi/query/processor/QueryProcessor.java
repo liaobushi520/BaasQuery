@@ -6,6 +6,7 @@ import com.droi.sdk.core.DroiQuery;
 import com.liaobushi.query.BaasCall;
 import com.liaobushi.query.DefaultBaasCall;
 import com.liaobushi.query.Query;
+import com.liaobushi.query.Service;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.JavaFile;
@@ -53,8 +54,6 @@ public class QueryProcessor extends AbstractProcessor {
     public static final String VAR_REF_SYMBOL = "$";
     private static final ClassName BAAS_CALL = ClassName.get(BaasCall.class);
 
-    private TypeElement serviceElement;
-    private ExecutableElement queryElement;
     private Filer filer;
     private Messager messager;
     private Elements elementUtils;
@@ -64,13 +63,12 @@ public class QueryProcessor extends AbstractProcessor {
         super.init(processingEnvironment);
         elementUtils = processingEnvironment.getElementUtils();
         messager = processingEnvironment.getMessager();
-        serviceElement = elementUtils.getTypeElement("com.liaobushi.query.Service");
         filer = processingEnvironment.getFiler();
     }
 
     @Override
     public boolean process(Set<? extends TypeElement> set, RoundEnvironment roundEnvironment) {
-        Set<? extends Element> serviceElements = roundEnvironment.getElementsAnnotatedWith(serviceElement);
+        Set<? extends Element> serviceElements = roundEnvironment.getElementsAnnotatedWith(Service.class);
         for (Element element : serviceElements) {
             processService(element);
         }
@@ -98,7 +96,7 @@ public class QueryProcessor extends AbstractProcessor {
         }
     }
 
-    private MethodSpec.Builder buildQueryCodeBlock(MethodSpec.Builder methodSpecBuild, Query query) {
+    private MethodSpec.Builder buildQueryCodeBlock(MethodSpec.Builder methodSpecBuild, Query query, List<ParameterSpec> parameterSpecs) {
         methodSpecBuild.addStatement("$T builder=$T.newBuilder()", DroiQuery.Builder.class, DroiQuery.Builder.class);
         //table param
         String tableName = query.table();
@@ -111,7 +109,7 @@ public class QueryProcessor extends AbstractProcessor {
         if (condition.isEmpty()) {
             messager.printMessage(Diagnostic.Kind.WARNING, "condition statement is null ,so query all data");
         }
-        String varName = Condition.build(methodSpecBuild, messager, query.condition());
+        String varName = Condition.build(methodSpecBuild, messager, query.condition(), parameterSpecs);
         methodSpecBuild.addStatement("$T cond=" + varName, DroiCondition.class)
                 .addStatement("$T droiError=new $T()", DroiError.class, DroiError.class)
                 .addStatement("builder.where(cond)");
@@ -125,7 +123,7 @@ public class QueryProcessor extends AbstractProcessor {
                     int limitValue = Integer.parseInt(limit);
                     if (limitValue == -1) {
                         messager.printMessage(Diagnostic.Kind.NOTE, "omit limit value");
-                    }else {
+                    } else {
                         methodSpecBuild.addStatement("builder.limit($L)", Integer.parseInt(limit));
                     }
                 } catch (NumberFormatException e) {
@@ -171,7 +169,7 @@ public class QueryProcessor extends AbstractProcessor {
                 }
                 TypeName enclosedTypeName = typeArguments.get(0);
                 MethodSpec.Builder callMethodSpecBuilder = MethodSpec.methodBuilder("call").addModifiers(Modifier.PUBLIC).returns(enclosedTypeName).addException(ClassName.get(Exception.class)).addAnnotation(Override.class);
-                buildQueryCodeBlock(callMethodSpecBuilder, query);
+                buildQueryCodeBlock(callMethodSpecBuilder, query,parameterSpecs);
                 TypeSpec callable = TypeSpec.anonymousClassBuilder("")
                         .addSuperinterface(ParameterizedTypeName.get(ClassName.get(Callable.class), enclosedTypeName))
                         .addMethod(callMethodSpecBuilder.build())
@@ -179,7 +177,7 @@ public class QueryProcessor extends AbstractProcessor {
                 methodSpecBuild.addStatement("$T<$T> baasCall=new $T($L)", BaasCall.class, enclosedTypeName, DefaultBaasCall.class, callable);
                 methodSpecBuild.addStatement("return baasCall");
             } else {
-                buildQueryCodeBlock(methodSpecBuild, query);
+                buildQueryCodeBlock(methodSpecBuild, query, parameterSpecs);
             }
         }
         return methodSpecBuild.build();
