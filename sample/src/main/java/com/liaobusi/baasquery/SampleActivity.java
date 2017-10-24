@@ -30,6 +30,7 @@ public class SampleActivity extends AppCompatActivity {
                 public void run() {
                     ArrayList<String> p = new ArrayList<String>();
                     p.add("这个老鼠");
+
                     Log.e("success", baasService.listSmileyPackages("小", 0, 2000, 2, p).size() + "");
                 }
             }).start();

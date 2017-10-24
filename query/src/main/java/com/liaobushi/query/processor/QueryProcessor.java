@@ -102,8 +102,9 @@ public class QueryProcessor extends AbstractProcessor {
         String tableName = query.table();
         if (tableName.isEmpty()) {
             messager.printMessage(Diagnostic.Kind.ERROR, "table name can not be null or \"\"");
+        } else {
+            methodSpecBuild.addStatement("builder.query($S)", tableName);
         }
-        methodSpecBuild.addStatement("builder.query($S)", tableName);
         //condition param
         String condition = query.condition();
         if (condition.isEmpty()) {
@@ -169,7 +170,7 @@ public class QueryProcessor extends AbstractProcessor {
                 }
                 TypeName enclosedTypeName = typeArguments.get(0);
                 MethodSpec.Builder callMethodSpecBuilder = MethodSpec.methodBuilder("call").addModifiers(Modifier.PUBLIC).returns(enclosedTypeName).addException(ClassName.get(Exception.class)).addAnnotation(Override.class);
-                buildQueryCodeBlock(callMethodSpecBuilder, query,parameterSpecs);
+                buildQueryCodeBlock(callMethodSpecBuilder, query, parameterSpecs);
                 TypeSpec callable = TypeSpec.anonymousClassBuilder("")
                         .addSuperinterface(ParameterizedTypeName.get(ClassName.get(Callable.class), enclosedTypeName))
                         .addMethod(callMethodSpecBuilder.build())

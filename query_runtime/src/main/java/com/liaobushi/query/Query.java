@@ -13,16 +13,18 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Query {
 
-    String ASC="ASC";
+    String ASC = "ASC";
 
-    String DESC="DESC";
+    String DESC = "DESC";
 
-    String table();
+    String EMPTY_STRING="";
 
-    String condition() default "";
+    String table() default EMPTY_STRING;
+
+    String condition() default EMPTY_STRING;
 
     String limit() default "-1";
 
-    String[] orderBy() default {"", ASC};
+    String[] orderBy() default {EMPTY_STRING, ASC};
 
 }
